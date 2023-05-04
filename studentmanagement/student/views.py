@@ -10,18 +10,24 @@ def index(request):
         })
 
 def add_student(request):
+
     if request.method == "POST":
         form = AddStudent(request.POST)
 
         if form.is_valid():
+            sucess = True
             form.save()
+            return render(request,"student/add.html",{
+                'form':form,
+                'success':True
+            })
 
-        return redirect('index')
     else:
+
         form = AddStudent()
     
     return render(request, 'student/add.html', {
-        'form':form})
+        'form':form, })
 
 def delete(request, pk):
     student = StudentData.objects.filter(pk=pk)
