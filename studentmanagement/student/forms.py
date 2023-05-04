@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 from .models import StudentData
 
@@ -23,5 +24,17 @@ class AddStudent(forms.ModelForm):
         'GPA': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-        def student_data_validation(self):
-            student_number = self.cleaned_data['student_number']
+    def clean(self):
+        cleaned_data = super().clean()
+        student_number = cleaned_data.get('student_number')
+        email = cleaned_data.get('email')
+        instance = self.instance
+        
+        if StudentData.objects.filter(student_number=student_number).exclude(pk=instance.pk if instance else None).exists():
+            self.add_error('student_number', 'Student with this student number already exists.')
+            
+        if StudentData.objects.filter(email=email).exclude(pk=instance.pk if instance else None).exists():
+            self.add_error('email', 'Student with this email already exists.')
+            
+        return cleaned_data
+

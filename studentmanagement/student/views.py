@@ -14,9 +14,10 @@ def add_student(request):
         form = AddStudent(request.POST)
 
         if form.is_valid():
+            form.clean()
             form.save()
 
-        return redirect('index')
+            return redirect('index')
     else:
         form = AddStudent()
     
@@ -29,5 +30,22 @@ def delete(request, pk):
        student.delete()
 
        return redirect('index')
+
+def edit(request, pk):
+    student = StudentData.objects.get(pk=pk)
+    if request.method == "POST":
+        form = AddStudent(request.POST, instance=student)
+
+        if form.is_valid():
+            form.save()
+            
+            return redirect('index')
+    else:
+        form = AddStudent(instance=student)
+    
+    return render(request, 'student/edit.html', {
+        'form':form
+        })
+            
 
 
