@@ -1,4 +1,6 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse
 
 from .models import StudentData
 from .forms import AddStudent
@@ -17,12 +19,17 @@ def add_student(request):
             form.clean()
             form.save()
 
-            return redirect('index')
+            return render(request, 'student/add.html', {
+            'form':form,
+            'success':True})
     else:
         form = AddStudent()
     
     return render(request, 'student/add.html', {
         'form':form})
+
+def view_student(request, id):
+    return HttpResponseRedirect(reverse('index'))
 
 def delete(request, pk):
     student = StudentData.objects.filter(pk=pk)
